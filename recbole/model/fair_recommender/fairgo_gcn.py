@@ -42,7 +42,7 @@ class FairGo_GCN(FairRecommender):
         self.aggr_method = config['aggr_method'].upper()
         if config['vs_weights'] is not None:
             self.vs_weights = config['vs_weights']
-            self.vs_weights = torch.tensor(self.vs_weights, device=self.device, dtype=torch.float32)
+            self.vs_weights = torch.tensor(self.vs_weights, dtype=torch.float32)
             self.vs_weights /= sum(self.vs_weights)
             if self.aggr_method == 'LVA':
                 assert self.n_layers == len(self.vs_weights), 'n_layers should be equal to length of vs_weights'
@@ -173,7 +173,7 @@ class FairGo_GCN(FairRecommender):
     def forward(self, sst_list):
         all_embedding = self.get_ego_embeddings()
         if self.train_stage == 'pretrain':
-            all_embedding = self.gcn(all_embedding, self.edge_indices, self.edge_weights)
+            all_embedding = self.gcn(all_embedding, self.edge_indices, edge_weight=self.edge_weights)
         if self.train_stage == 'finetune':
             temp = None
             for sst in sst_list:
